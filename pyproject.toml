@@ -5,6 +5,9 @@ description = ""
 authors = ["Yoonseop Kang <e0engoon@gmail.com>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+sitegen = "sitegen.build:build"
+
 [tool.poetry.dependencies]
 python = "^3.10.5"
 Jinja2 = "^3.1.2"
