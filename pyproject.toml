@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "sitegen"
+version = "0.1.0"
+description = ""
+authors = ["Yoonseop Kang <e0engoon@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10.5"
+Jinja2 = "^3.1.2"
+toml = "^0.10.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+pre-commit = "^3.3.3"
+ruff = "^0.0.275"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
