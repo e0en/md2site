@@ -1,9 +1,22 @@
 [tool.poetry]
 name = "md2site"
-version = "0.1.0"
-description = ""
+version = "0.0.1"
+description = "A static site generator with bare-minimum functionality."
+license = "GPL-3.0-or-later"
 authors = ["Yoonseop Kang <e0engoon@gmail.com>"]
 readme = "README.md"
+homepage = "https://github.com/e0en/md2site"
+repository = "https://github.com/e0en/md2site"
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Programming Language :: Python :: 3",
+  "Topic :: Text Processing :: Markup :: Markdown",
+  "Topic :: Internet",
+  "Typing :: Typed",
+]
 
 [tool.poetry.scripts]
 md2site = "md2site.generator:generate"
