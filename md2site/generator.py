@@ -3,8 +3,8 @@ from pathlib import Path
 import jinja2
 import toml
 
-from sitegen.post import Post
-from sitegen.site import Site
+from md2site.post import Post
+from md2site.site import Site
 
 
 def load_config() -> Site:

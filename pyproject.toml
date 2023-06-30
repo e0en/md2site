@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "sitegen"
+name = "md2site"
 version = "0.1.0"
 description = ""
 authors = ["Yoonseop Kang <e0engoon@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-sitegen = "sitegen.build:build"
+md2site = "md2site.generator:generate"
 
 [tool.poetry.dependencies]
 python = "^3.10.5"
