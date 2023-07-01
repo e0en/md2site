@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -9,3 +9,4 @@ class Site:
 
     base_url: str
     name: str
+    link_map: dict[str, str] = field(default_factory=dict)

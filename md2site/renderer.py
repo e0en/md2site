@@ -1,7 +1,12 @@
 import re
+from mistletoe import Document
+from mistletoe import span_token
 
 from mistletoe.html_renderer import HTMLRenderer
 from mistletoe.span_token import RawText, SpanToken
+
+from md2site.site import Site
+from mistletoe.token import Token
 
 
 class WikiLink(SpanToken):
@@ -28,12 +33,44 @@ class WikiLink(SpanToken):
 
 
 class Renderer(HTMLRenderer):
-    def __init__(self, base_url: str):
+    def __init__(self, config: Site):
         super().__init__(WikiLink)
-        self.base_url = base_url
+        self.site = config
 
     def render_wiki_link(self, token: WikiLink):
-        template = '<a href="{base_url}/{target}">{inner}</a>'
-        target = token.target
+        template = '<a href="{base_url}/{target}.html">{inner}</a>'
+        target = self.site.link_map.get(token.target, "#")
         inner = self.render_inner(token)
-        return template.format(base_url=self.base_url, target=target, inner=inner)
+        return template.format(base_url=self.site.base_url, target=target, inner=inner)
+
+
+class Parser:
+    def __init__(self):
+        span_token.add_token(WikiLink)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_val, traceback):
+        span_token.reset_tokens()
+
+    def parse(self, markdown: str):
+        document = Document(markdown)
+        return document
+
+
+def extract_wikilinks(markdown: str) -> set[str]:
+    with Parser() as p:
+        ast = p.parse(markdown)
+        links = set()
+        nodes: list[Token] = [ast]
+        while nodes:
+            node = nodes.pop(0)
+            if isinstance(node, WikiLink):
+                links.add(node.target)
+            if isinstance(node, RawText):
+                continue
+            if hasattr(node, "children"):
+                for child in node.children:
+                    nodes.append(child)
+        return links

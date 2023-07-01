@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import TextIO
@@ -25,7 +25,7 @@ class Post:
     summary: str
     created_at: datetime
     slug: str
-    backlinks: list[str] = list()
+    backlinks: list[str] = field(default_factory=list)
 
     @classmethod
     def from_file(cls, filepath: Path) -> Post:
