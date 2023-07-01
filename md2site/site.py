@@ -7,6 +7,7 @@ class PostMetaData:
     name: str
     title: str
     created_at: datetime
+    url: str
 
 
 @dataclass

@@ -111,7 +111,8 @@ def generate():
     posts = load_post_files()
     site.link_map = build_link_map(posts)
     site.recent_posts = [
-        PostMetaData(p.name, p.title, p.created_at) for p in posts[:10]
+        PostMetaData(p.name, p.title, p.created_at, name_to_url(p.name, site.base_url))
+        for p in posts[:10]
     ]
     populate_backlinks(posts, site.base_url)
     build_posts(posts, site)

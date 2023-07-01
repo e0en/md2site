@@ -40,12 +40,10 @@ class Post:
 
             if "date" in content.frontmatter:
                 created_at = content.frontmatter["date"]
-                print(created_at)
             else:
                 created_at = datetime.fromtimestamp(os.path.getctime(filepath)).replace(
                     tzinfo=timezone.utc
                 )
-                print(created_at)
             return Post(
                 name=name,
                 title=title,
