@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import shutil
 
@@ -8,6 +9,13 @@ from md2site.post import Post, name_to_slug
 from md2site.site import PostMetaData, Site
 
 from md2site.renderer import Parser, Renderer, extract_wikilinks
+
+
+def prepare_output_folder():
+    output_folder = Path("dist")
+    if output_folder.exists():
+        shutil.rmtree(output_folder, ignore_errors=True)
+    os.makedirs(output_folder)
 
 
 def load_config() -> Site:
@@ -97,6 +105,7 @@ def copy_static_files():
 
 
 def generate():
+    prepare_output_folder()
     copy_static_files()
     site = load_config()
     posts = load_post_files()
