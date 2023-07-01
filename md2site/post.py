@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import TextIO
 import os
@@ -37,7 +37,15 @@ class Post:
                 title = content.frontmatter["title"]
             else:
                 title = name
-            created_at = datetime.fromtimestamp(os.path.getctime(filepath))
+
+            if "date" in content.frontmatter:
+                created_at = content.frontmatter["date"]
+                print(created_at)
+            else:
+                created_at = datetime.fromtimestamp(os.path.getctime(filepath)).replace(
+                    tzinfo=timezone.utc
+                )
+                print(created_at)
             return Post(
                 name=name,
                 title=title,

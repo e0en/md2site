@@ -5,7 +5,7 @@ import jinja2
 import toml
 
 from md2site.post import Post, name_to_slug
-from md2site.site import Site
+from md2site.site import PostMetaData, Site
 
 from md2site.renderer import Parser, Renderer, extract_wikilinks
 
@@ -26,6 +26,7 @@ def load_post_files() -> list[Post]:
     for child in Path("posts").iterdir():
         if child.name.endswith(".md"):
             posts.append(Post.from_file(child))
+    posts.sort(key=lambda p: p.created_at, reverse=True)
     return posts
 
 
@@ -39,12 +40,16 @@ def build_posts(posts: list[Post], site: Site):
     loader = jinja2.FileSystemLoader("template")
     env = jinja2.Environment(loader=loader)
     post_template = env.get_template("post.html")
+    index_template = env.get_template("index.html")
     renderer = Renderer(site)
     parser = Parser()
     for post in posts:
         parsed = parser.parse(post.content)
         post.content = renderer.render(parsed)
-        write_html(site, post, post_template)
+        if post.name == "index":
+            write_html(site, post, index_template)
+        else:
+            write_html(site, post, post_template)
 
 
 def populate_backlinks(posts: list[Post], base_url: str):
@@ -69,7 +74,7 @@ def build_backlink_map(posts: list[Post]) -> dict[str, set[str]]:
         for link in links:
             if link not in result:
                 result[link] = set()
-            result[link].add(p.title)
+            result[link].add(p.name)
     return result
 
 
@@ -96,5 +101,8 @@ def generate():
     site = load_config()
     posts = load_post_files()
     site.link_map = build_link_map(posts)
+    site.recent_posts = [
+        PostMetaData(p.name, p.title, p.created_at) for p in posts[:10]
+    ]
     populate_backlinks(posts, site.base_url)
     build_posts(posts, site)
