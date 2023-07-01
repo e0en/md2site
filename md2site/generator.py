@@ -4,7 +4,7 @@ import shutil
 import jinja2
 import toml
 
-from md2site.post import Post
+from md2site.post import Post, name_to_slug
 from md2site.site import Site
 
 from md2site.renderer import Parser, Renderer, extract_wikilinks
@@ -47,6 +47,21 @@ def build_posts(posts: list[Post], site: Site):
         write_html(site, post, post_template)
 
 
+def populate_backlinks(posts: list[Post], base_url: str):
+    backlink_map = build_backlink_map(posts)
+    for post in posts:
+        if post.title not in backlink_map:
+            continue
+        backlinks = []
+        for title in backlink_map[post.title]:
+            backlinks.append({"title": title, "url": title_to_url(title, base_url)})
+        post.backlinks = backlinks
+
+
+def title_to_url(title: str, base_url: str) -> str:
+    return f"{base_url}/{name_to_slug(title)}.html"
+
+
 def build_backlink_map(posts: list[Post]) -> dict[str, set[str]]:
     result = {}
     for p in posts:
@@ -81,5 +96,5 @@ def generate():
     site = load_config()
     posts = load_post_files()
     site.link_map = build_link_map(posts)
-    build_backlink_map(posts)
+    populate_backlinks(posts, site.base_url)
     build_posts(posts, site)
