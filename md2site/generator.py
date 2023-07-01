@@ -50,16 +50,16 @@ def build_posts(posts: list[Post], site: Site):
 def populate_backlinks(posts: list[Post], base_url: str):
     backlink_map = build_backlink_map(posts)
     for post in posts:
-        if post.title not in backlink_map:
+        if post.name not in backlink_map:
             continue
         backlinks = []
-        for title in backlink_map[post.title]:
-            backlinks.append({"title": title, "url": title_to_url(title, base_url)})
+        for name in backlink_map[post.name]:
+            backlinks.append({"title": name, "url": name_to_url(name, base_url)})
         post.backlinks = backlinks
 
 
-def title_to_url(title: str, base_url: str) -> str:
-    return f"{base_url}/{name_to_slug(title)}.html"
+def name_to_url(name: str, base_url: str) -> str:
+    return f"{base_url}/{name_to_slug(name)}.html"
 
 
 def build_backlink_map(posts: list[Post]) -> dict[str, set[str]]:
@@ -76,7 +76,7 @@ def build_backlink_map(posts: list[Post]) -> dict[str, set[str]]:
 def build_link_map(posts: list[Post]) -> dict[str, str]:
     mapping = {}
     for post in posts:
-        mapping[post.title] = post.slug
+        mapping[post.name] = post.slug
     return mapping
 
 

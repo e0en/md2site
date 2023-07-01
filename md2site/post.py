@@ -20,6 +20,7 @@ class Post:
     All information necessary to render a post.
     """
 
+    name: str
     title: str
     content: str
     summary: str
@@ -32,9 +33,14 @@ class Post:
         with open(filepath, "r", encoding="utf-8") as f:
             content = separate_frontmatter(f)
             name = filepath.stem
+            if "title" in content.frontmatter:
+                title = content.frontmatter["title"]
+            else:
+                title = name
             created_at = datetime.fromtimestamp(os.path.getctime(filepath))
             return Post(
-                title=name,
+                name=name,
+                title=title,
                 content=content.body,
                 summary=content.body[:140],
                 created_at=created_at,
@@ -43,7 +49,11 @@ class Post:
 
 
 def parse_frontmatter(yaml_text: str) -> dict[str, str]:
-    return yaml.safe_load(yaml_text)
+    parsed = yaml.safe_load(yaml_text)
+    if parsed is not None:
+        return parsed
+    else:
+        return {}
 
 
 def separate_frontmatter(markdown: TextIO) -> MarkdownContent:
@@ -51,9 +61,10 @@ def separate_frontmatter(markdown: TextIO) -> MarkdownContent:
     frontmatter_lines: list[str] = []
     body_lines: list[str] = []
     for line_number, line in enumerate(markdown):
-        if line_number == 0 and line == "---":
+        if line_number == 0 and line.strip() == "---":
+            is_frontmatter = True
             continue
-        if is_frontmatter and line == "---":
+        if is_frontmatter and line.strip() == "---":
             is_frontmatter = False
             continue
         if is_frontmatter:
