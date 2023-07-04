@@ -7,6 +7,8 @@ import os
 
 import yaml
 
+from md2site.site import PostMetaData
+
 
 @dataclass
 class MarkdownContent:
@@ -26,6 +28,8 @@ class Post:
     summary: str
     created_at: datetime
     slug: str
+    prev_post: PostMetaData | None = None
+    next_post: PostMetaData | None = None
     backlinks: list[str] = field(default_factory=list)
 
     @classmethod

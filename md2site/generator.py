@@ -75,6 +75,26 @@ def name_to_url(name: str, base_url: str) -> str:
     return f"{base_url}/{name_to_slug(name)}.html"
 
 
+def populate_prev_next_links(posts: list[Post], base_url: str):
+    for index, post in enumerate(posts):
+        if index > 0:
+            prev_post = posts[index - 1]
+            post.prev_post = PostMetaData(
+                prev_post.name,
+                prev_post.title,
+                prev_post.created_at,
+                name_to_url(prev_post.name, base_url),
+            )
+        if index < len(posts) - 1:
+            next_post = posts[index + 1]
+            post.next_post = PostMetaData(
+                next_post.name,
+                next_post.title,
+                next_post.created_at,
+                name_to_url(next_post.name, base_url),
+            )
+
+
 def build_backlink_map(posts: list[Post]) -> dict[str, set[str]]:
     result = {}
     for p in posts:
@@ -115,4 +135,5 @@ def generate():
         for p in posts[:10]
     ]
     populate_backlinks(posts, site.base_url)
+    populate_prev_next_links(posts, site.base_url)
     build_posts(posts, site)
