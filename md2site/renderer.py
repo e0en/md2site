@@ -32,9 +32,33 @@ class WikiLink(SpanToken):
             self.children = (RawText(splits[1].strip()),)
 
 
+class AutoUrlLink(SpanToken):
+    """
+    AutoURLLink token. ("http://www.example.com")
+
+    This is an inline token with a single child of type RawText.
+
+    Attributes:
+        children (list): a single RawText node for the link target.
+        target (str): link target.
+    """
+
+    precedence = 1
+    repr_attributes = "target"
+    pattern = re.compile(
+        r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+    )
+    parse_inner = False
+
+    def __init__(self, match: re.Match):
+        content = match.group(0)
+        self.children = (RawText(content),)
+        self.target = content
+
+
 class Renderer(HTMLRenderer):
     def __init__(self, config: Site):
-        super().__init__(WikiLink)
+        super().__init__(WikiLink, AutoUrlLink)
         self.site = config
 
     def render_wiki_link(self, token: WikiLink):
@@ -42,6 +66,11 @@ class Renderer(HTMLRenderer):
         target = self.site.link_map.get(token.target, "#")
         inner = self.render_inner(token)
         return template.format(base_url=self.site.base_url, target=target, inner=inner)
+
+    def render_auto_url_link(self, token: AutoUrlLink):
+        template = '<a href="{target}">{target}</a>'
+        target = token.target
+        return template.format(target=target)
 
 
 class Parser:
