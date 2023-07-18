@@ -28,12 +28,13 @@ class Post:
     summary: str
     created_at: datetime
     slug: str
+    url: str
     prev_post: PostMetaData | None = None
     next_post: PostMetaData | None = None
     backlinks: list[str] = field(default_factory=list)
 
     @classmethod
-    def from_file(cls, filepath: Path) -> Post:
+    def from_file(cls, filepath: Path, base_url: str) -> Post:
         with open(filepath, "r", encoding="utf-8") as f:
             content = separate_frontmatter(f)
             name = filepath.stem
@@ -43,11 +44,12 @@ class Post:
                 title = name
 
             if "date" in content.frontmatter:
-                created_at = content.frontmatter["date"]
+                created_at: datetime = content.frontmatter["date"]
             else:
                 created_at = datetime.fromtimestamp(os.path.getctime(filepath)).replace(
                     tzinfo=timezone.utc
                 )
+
             return Post(
                 name=name,
                 title=title,
@@ -55,6 +57,7 @@ class Post:
                 summary=content.body[:140],
                 created_at=created_at,
                 slug=name_to_slug(name),
+                url=name_to_url(name, base_url),
             )
 
 
@@ -89,3 +92,7 @@ def separate_frontmatter(markdown: TextIO) -> MarkdownContent:
 
 def name_to_slug(name: str) -> str:
     return name.lower().replace(" ", "-")
+
+
+def name_to_url(name: str, base_url: str) -> str:
+    return f"{base_url}/{name_to_slug(name)}.html"

@@ -5,7 +5,7 @@ import shutil
 import jinja2
 import toml
 
-from md2site.post import Post, name_to_slug
+from md2site.post import Post, name_to_url
 from md2site.site import PostMetaData, Site
 
 from md2site.renderer import Parser, Renderer, extract_wikilinks
@@ -29,11 +29,11 @@ def parse_markdown(markdown: str) -> str:
     return markdown
 
 
-def load_post_files() -> list[Post]:
+def load_post_files(site: Site) -> list[Post]:
     posts = list()
     for child in Path("posts").iterdir():
         if child.name.endswith(".md"):
-            posts.append(Post.from_file(child))
+            posts.append(Post.from_file(child, site.base_url))
     posts.sort(key=lambda p: p.created_at, reverse=True)
     return posts
 
@@ -69,10 +69,6 @@ def populate_backlinks(posts: list[Post], base_url: str):
         for name in backlink_map[post.name]:
             backlinks.append({"title": name, "url": name_to_url(name, base_url)})
         post.backlinks = backlinks
-
-
-def name_to_url(name: str, base_url: str) -> str:
-    return f"{base_url}/{name_to_slug(name)}.html"
 
 
 def populate_prev_next_links(posts: list[Post], base_url: str):
