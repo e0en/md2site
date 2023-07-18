@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "md2site"
-version = "0.0.7"
+version = "0.0.8"
 description = "A static site generator with bare-minimum functionality."
 license = "GPL-3.0-or-later"
 authors = ["Yoonseop Kang <e0engoon@gmail.com>"]
