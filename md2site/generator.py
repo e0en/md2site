@@ -124,7 +124,9 @@ def generate():
     prepare_output_folder()
     copy_static_files()
     site = load_config()
-    posts = load_post_files()
+    all_posts = load_post_files(site)
+    special_posts = [p for p in all_posts if is_special(p)]
+    posts = [p for p in all_posts if not is_special(p)]
     site.link_map = build_link_map(posts)
     site.recent_posts = [
         PostMetaData(p.name, p.title, p.created_at, name_to_url(p.name, site.base_url))
@@ -132,4 +134,8 @@ def generate():
     ]
     populate_backlinks(posts, site.base_url)
     populate_prev_next_links(posts, site.base_url)
-    build_posts(posts, site)
+    build_posts(posts + special_posts, site)
+
+
+def is_special(post: Post) -> bool:
+    return post.name == "index"
